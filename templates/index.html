@@ -25,13 +25,23 @@
     </footer>
 
     <script>
-        fetch('https://lastfm-last-played.biancarosa.com.br/nottucks/latest-song')
-            .then(res => res.json())
-            .then(data => {
-                const track = data?.track;
-                if (track) document.getElementById('song').textContent = `${track.name} — ${track.artist['#text']}`;
+        fetch('https://koito.ixxz.moe/apis/web/v1/listens?limit=1&period=all_time')
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                return res.json();
             })
-            .catch(() => { document.getElementById('song').textContent = 'offline'; });
+            .then(data => {
+                const track = data?.items?.[0]?.track;
+                if (!track) {
+                    document.getElementById('song').textContent = 'nothing played yet';
+                    return;
+                }
+                const artists = track.artists.map(a => a.name).join(', ');
+                document.getElementById('song').textContent = `${track.title} — ${artists}`;
+            })
+            .catch(() => {
+                document.getElementById('song').textContent = 'offline';
+            });
     </script>
 </body>
 
